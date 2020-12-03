@@ -20,7 +20,7 @@ dispatcher = updater.dispatcher
 
 updates = bot.getUpdates() 
 for u in updates :
-    #print(u.message)
+    print(u.message)
     if u.message.text == "레포확인":
         chat_id = bot.getUpdates()[-1].message.chat.id
         bot.sendMessage(chat_id=chat_id, text='별명을 선택해주세요')
