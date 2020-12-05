@@ -5,6 +5,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from django.http import HttpResponse
 import requests, json
+import numpy as np
 
 TOKEN="1259085830:AAFNuPKWM4yNnn1xvdNip9ADGZGCMb4sFmk"
 url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
@@ -41,10 +42,10 @@ def repoStatus(update, context):
 
     for i in range(0,resLength):
         repoList.append(InlineKeyboardButton(f"{res['alias'][i]}", callback_data=f"{res['alias'][i]}"))
+    
 
-    repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
-    print(buildMenu(repoList, len(repoList)-1))
-    #repoMarkup = InlineKeyboardMarkup(repoList)
+    #repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
+    repoMarkup = InlineKeyboardMarkup(repoList.T)
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
 def changeKST(ISO):
