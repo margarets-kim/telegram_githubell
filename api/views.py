@@ -11,7 +11,7 @@ url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 bot = telegram.Bot(token=TOKEN)
 chat_id = bot.getUpdates()[-1].message.chat.id
 
-custom_keyboard=[['add','check']]
+custom_keyboard=[['/add','/check']]
 reply_markup=telegram.ReplyKeyboardMarkup(custom_keyboard)
 #bot.send_message(chat_id=chat_id, text="Custom Keyboard Test", reply_markup=reply_markup)
 
