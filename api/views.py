@@ -21,10 +21,12 @@ dispatcher = updater.dispatcher
 updates = bot.getUpdates()
 
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!", reply_markup=reply_markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="안녕, 나는 깃허브 레포 알람 봇이야~!!", reply_markup=reply_markup)
 
 def repoStatus(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text='your repo list')
+    res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
+    print(res)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{res}")
 
 start_handler = CommandHandler('start', start)
 repoStatus_handler = CommandHandler('check', repoStatus)
