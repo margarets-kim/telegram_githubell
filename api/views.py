@@ -1,5 +1,4 @@
 from django.shortcuts import render
-import os
 import telegram
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,7 +7,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from django.http import HttpResponse
 import requests, json
 
-TOKEN="1259085830:AAFNuPKWM4yNnn1xvdNip9ADGZGCMb4sFmk"
+TOKEN="1498546920:AAFFE6PJlfZjFvWS51fvwDElA0ay6k96QEI"
 #url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 
 bot = telegram.Bot(token=TOKEN)
@@ -19,10 +18,7 @@ reply_markup=telegram.ReplyKeyboardMarkup(custom_keyboard)
 updater = Updater(token=TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
-updates = bot.getUpdates()
-
 class UserAlarm (APIView) : 
-
     def get (self, request) :
         try:
             chat_id = request.GET.get('id', '')
@@ -43,16 +39,16 @@ class UserAlarm (APIView) :
             return_res = return_res + f"주소 : {url}"
 
             bot.send_message(chat_id=chat_id, text=f"{return_res}")
-            
+
             return Response(status=200)
 
         except Exception as e:
             return Response("error", status=404)
     
-def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="안녕, 나는 깃허브 레포 알람 봇이야~!!", reply_markup=reply_markup)
+def start(update, context): #시작할 때 호출되는 함수
+    context.bot.send_message(chat_id=update.effective_chat.id, text="안녕!, 난 깃허브 레포 알람 봇:)", reply_markup=reply_markup)
 
-def repoStatus(update, context):
+def repoStatus(update, context): #레포리스트를 가져와서 고르는 함수
     repoList = []
     res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
     res=json.loads(res.content)
@@ -64,7 +60,7 @@ def repoStatus(update, context):
     repoMarkup = InlineKeyboardMarkup(repoList)
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
-def changeKST(ISO):
+def changeKST(ISO): #ISO -> KST 시간 변환
     yyyymmdd, time = ISO.split('T')
     yyyy, mm, dd = yyyymmdd.split('-')
     hour, minute, second = time.split(':')
@@ -77,7 +73,7 @@ def changeKST(ISO):
     KST = yyyymmdd + " " + hour + ":" + minute + ":" + second
     return KST
 
-def callbackGet(update, context):
+def callbackGet(update, context): #레포 선택에 대한 대답
     data = {'id':f'{update.effective_chat.id}','nick_name':f'{update.callback_query.data}'}
     res = requests.get("http://margarets.pythonanywhere.com/api/git/",params=data)
     res = json.loads(res.content)
