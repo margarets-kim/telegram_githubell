@@ -8,9 +8,33 @@ import requests
 TOKEN="1259085830:AAFNuPKWM4yNnn1xvdNip9ADGZGCMb4sFmk"
 url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 
-p=requests.post(url).json()
+bot = telegram.Bot(token=TOKEN)
+chat_id = bot.getUpdates()[-1].message.chat.id
 
-print(p)
+custom_keyboard=[['레포추가','레포확인']]
+reply_markup=telegram.ReplyKeyboardMarkup(custom_keyboard)
+bot.send_message(chat_id=chat_id, text="Custom Keyboard Test", reply_markup=reply_markup)
+
+updater = Updater(token=TOKEN, use_context=True)
+dispatcher = updater.dispatcher
+
+updates = bot.getUpdates() 
+for u in updates :
+    #print(u.message)
+    if u.message.text == "레포확인":
+        chat_id = bot.getUpdates()[-1].message.chat.id
+        bot.sendMessage(chat_id=chat_id, text='별명을 선택해주세요')
+
+def start(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
+
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)
+
+updater.start_polling()
+
+""" p=requests.post(url).json()
+print(p) """
 
 """ PORT = int(os.environ.get('PORT','8443'))
 updater = Updater(TOKEN, use_context=True)
