@@ -39,7 +39,7 @@ def repoStatus(update, context):
     print(res['alias'])
 
     for i in res['alias']:
-        repoList.append(InlineKeyboardButton(f"{res[alias][i]}", callback_data=f"{res[alias][i]}"))
+        repoList.append(InlineKeyboardButton(f"{res['alias'][i]}", callback_data=f"{res['alias'][i]}"))
 
     repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
@@ -50,8 +50,8 @@ def callbackGet(update, context):
     res = json.loads()
     print(res)
     data2 = {   'id' : f'{update.effective_chat.id}','nick_name' : f'{update.callback_query.data}',
-                'fav_repository':f'{res[repoUrl]}', 'nick_name' : f'{update.callback_query.data}',
-                'type' : 'telegram', 'branch' : f'{res[repoBranch]}'
+                'fav_repository':f'{res['repoUrl']}', 'nick_name' : f'{update.callback_query.data}',
+                'type' : 'telegram', 'branch' : f'{res['repoBranch']}'
                 }
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", data = data2)
     res2 = json.loads()
