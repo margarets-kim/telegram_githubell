@@ -2,6 +2,7 @@ from django.shortcuts import render
 import os
 import telegram
 from telegram.ext import Updater, CommandHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from django.http import HttpResponse
 import requests, json
 
@@ -23,11 +24,38 @@ updates = bot.getUpdates()
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="안녕, 나는 깃허브 레포 알람 봇이야~!!", reply_markup=reply_markup)
 
+def buildMenu(buttons, n_cols, header_buttons=None, footer_buttons=None):
+    menu = [buttons[i:i+n_cols] for i in range(0, len(buttons), n_cols)]
+    if header_buttons:
+        menu.insert(0, header_buttons)
+    if footer_buttons:
+        menu.append(footer_buttons)
+    return menu
+
 def repoStatus(update, context):
+    repoList = []
     res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
     res=json.loads(res.content)
     print(res['alias'])
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{res['alias']}")
+
+    for i in res['alias']:
+        repoList.append(InlineKeyboardButton(f"{res[alias][i]}", callback_data=f"{res[alias][i]}"))
+
+    repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
+    update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
+
+def callbackGet(update, context):
+    data = {'id':f'{update.effective_chat.id}','nick_name':f'{update.callback_query.data}'}
+    res = requests.get("http://margarets.pythonanywhere.com/api/git/",params=data)
+    res = json.loads()
+    print(res)
+    data2 = {   'id' : f'{update.effective_chat.id}','nick_name' : f'{update.callback_query.data}',
+                'fav_repository':f'{res[repoUrl]}', 'nick_name' : f'{update.callback_query.data}',
+                'type' : 'telegram', 'branch' : f'{res[repoBranch]}'
+                }
+    res2 = requests.get("http://margarets.pythonanywhere.com/api/", data = data2)
+    res2 = json.loads()
+    context.bot.edit_message_text(text=f"{res2}")
 
 start_handler = CommandHandler('start', start)
 repoStatus_handler = CommandHandler('check', repoStatus)
