@@ -74,12 +74,12 @@ def callbackGet(update, context):
     else:
         ISO = res2[0].get("commit").get("committer").get("date")
         KST = changeKST(ISO)
-        return_str_text = f"[{repoList_arr[return_str_repoAlias-1]}] 최근 커밋 이력입니다.\n"
-        return_str_text = return_str_text + "날짜 : " + KST + "\n"
-        return_str_text = return_str_text + "이름 : " + res2[0].get("commit").get("committer").get("name") + "\n"
-        return_str_text = return_str_text + "이메일 : " + res2[0].get("commit").get("committer").get("email") + "\n"
-        return_str_text = return_str_text + "커밋메세지 : " + res2[0].get("commit").get("message") + "\n"
-        return_str_text = return_str_text + "주소 : " + res2[0].get("html_url")
+        res2 = f"[{update.callback_query.data}] 최근 커밋 이력입니다.\n"
+        res2 = res2 + "날짜 : " + KST + "\n"
+        res2 = res2 + "이름 : " + res2[0].get("commit").get("committer").get("name") + "\n"
+        res2 = res2 + "이메일 : " + res2[0].get("commit").get("committer").get("email") + "\n"
+        res2t = res2 + "커밋메세지 : " + res2[0].get("commit").get("message") + "\n"
+        res2 = res2 + "주소 : " + res2[0].get("html_url")
 
     context.bot.edit_message_text(text=f"{res2}",
                                   chat_id=update.callback_query.message.chat_id,
