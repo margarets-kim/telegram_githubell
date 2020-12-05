@@ -49,8 +49,8 @@ def callbackGet(update, context):
     res = requests.get("http://margarets.pythonanywhere.com/api/git/",params=data)
     res = json.loads()
     print(res)
-    data2 = {   'id' : f'{update.effective_chat.id}','nick_name' : f'{update.callback_query.data}',
-                'fav_repository':f'{res['repoUrl']}', 'nick_name' : f'{update.callback_query.data}',
+    data2 = {   'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}',
+                'fav_repository' : f'{res['repoUrl']}', 
                 'type' : 'telegram', 'branch' : f'{res['repoBranch']}'
                 }
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", data = data2)
