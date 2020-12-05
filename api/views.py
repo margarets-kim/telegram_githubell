@@ -37,9 +37,9 @@ def repoStatus(update, context):
     res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
     res=json.loads(res.content)
     print(res['alias'])
+    resLength = len(res['alias'])
 
-
-    for i in len(res['alias']):
+    for i in range(0,resLength):
         repoList.append(InlineKeyboardButton(f"{res['alias'][i]}", callback_data=f"{res['alias'][i]}"))
 
     repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
