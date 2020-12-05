@@ -30,6 +30,7 @@ def buildMenu(buttons, n_cols, header_buttons=None, footer_buttons=None):
         menu.insert(0, header_buttons)
     if footer_buttons:
         menu.append(footer_buttons)
+    print(menu)
     return menu
 
 def repoStatus(update, context):
