@@ -62,5 +62,6 @@ repoStatus_handler = CommandHandler('check', repoStatus)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(repoStatus_handler)
+dispatcher.add_handler(CallbackQueryHandler(callbackGet))
 
 updater.start_polling()
