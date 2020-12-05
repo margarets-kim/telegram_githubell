@@ -10,7 +10,7 @@ TOKEN="1259085830:AAFNuPKWM4yNnn1xvdNip9ADGZGCMb4sFmk"
 url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 
 bot = telegram.Bot(token=TOKEN)
-chat_id = bot.getUpdates()[-1].message.chat.id
+#chat_id = bot.getUpdates()[-1].message.chat.id
 
 custom_keyboard=[['/add','/check']]
 reply_markup=telegram.ReplyKeyboardMarkup(custom_keyboard)
@@ -49,13 +49,13 @@ def callbackGet(update, context):
     data = {'id':f'{update.effective_chat.id}','nick_name':f'{update.callback_query.data}'}
     res = requests.get("http://margarets.pythonanywhere.com/api/git/",params=data)
     res = json.loads(res.content)
-    print(res)
     repoURL = res['repoUrl']
     repoBRANCH = res['repoBranch']
     data2 = { 'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}', 'fav_repository' : f'{repoURL}', 'type' : 'telegram', 'branch' : f'{repoBRANCH}'}
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", data = data2)
     res2 = json.loads(res2.content)
-    context.bot.edit_message_text(text=f"{res2}")
+    print(res2)
+    context.bot.reply_text(text=f"{res2}")
 
 start_handler = CommandHandler('start', start)
 repoStatus_handler = CommandHandler('check', repoStatus)
