@@ -5,5 +5,5 @@ from django.conf.urls import include
 app_name = 'api'
 
 urlpatterns = [
-    path('', views.UserView.as_view()),
+    path('', views,UserAlarm.as_view())
 ]

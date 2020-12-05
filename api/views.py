@@ -1,6 +1,8 @@
 from django.shortcuts import render
 import os
 import telegram
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from django.http import HttpResponse
@@ -10,16 +12,36 @@ TOKEN="1259085830:AAFNuPKWM4yNnn1xvdNip9ADGZGCMb4sFmk"
 url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 
 bot = telegram.Bot(token=TOKEN)
-#chat_id = bot.getUpdates()[-1].message.chat.id
 
 custom_keyboard=[['/add','/check']]
 reply_markup=telegram.ReplyKeyboardMarkup(custom_keyboard)
-#bot.send_message(chat_id=chat_id, text="Custom Keyboard Test", reply_markup=reply_markup)
 
 updater = Updater(token=TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
 updates = bot.getUpdates()
+
+class UserAlarm (APIView) : 
+
+    def get (self, request) {
+        chat_id = request.GET.get('id', '')
+        nick_name = request.GET.get('nick_name', '')
+        info = request.GET.get('json', '')
+
+        res = json.loads(info)
+        ISO = res[0].get("commit").get("committer").get("date")
+        KST = changeKST(ISO)
+
+        return_res=f"[{nick_name}] 커밋이력입니다.\n"
+        return_res = return_res + "날짜 : " + KST + "\n"
+        return_res = return_res + "이름 : " + res[0].get("commit").get("committer").get("name") + "\n"
+        return_res = return_res + "이메일 : " + res[0].get("commit").get("committer").get("email") + "\n"
+        return_res = return_res + "커밋메세지 : " + res[0].get("commit").get("message") + "\n"
+        return_res = return_res + "주소 : " + res[0].get("html_url")
+
+        bot.send_message(chat_id=chat_id, text=f"{return_res}")
+        return Response(status=200)
+    }
 
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="안녕, 나는 깃허브 레포 알람 봇이야~!!", reply_markup=reply_markup)
