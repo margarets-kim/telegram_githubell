@@ -26,9 +26,9 @@ class UserAlarm (APIView) :
     def get (self, request) :
         chat_id = request.GET.get('id', '')
         nick_name = request.GET.get('nick_name', '')
-        info = request.GET.get('json', '')
+        res = request.GET.get('json', '')
 
-        res = json.loads(info)
+        #res = json.loads(info)
         ISO = res[0].get("commit").get("committer").get("date")
         KST = changeKST(ISO)
 
