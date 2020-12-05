@@ -42,7 +42,8 @@ def repoStatus(update, context):
     for i in range(0,resLength):
         repoList.append(InlineKeyboardButton(f"{res['alias'][i]}", callback_data=f"{res['alias'][i]}"))
 
-    repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
+    #repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
+    repoMarkup = InlineKeyboardMarkup(repoList)
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
 def changeKST(ISO):
@@ -67,7 +68,7 @@ def callbackGet(update, context):
     data2 = { 'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}', 'fav_repository' : f'{repoURL}', 'type' : 'telegram', 'branch' : f'{repoBRANCH}'}
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", params = data2)
     res2 = json.loads(res2.content)
-    print(res2)
+    print(res2[0])
     if res2 == []:
         res2 = "해당 레포 업데이트 사항이 없습니다."
     elif res2 == None:
