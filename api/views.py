@@ -24,14 +24,6 @@ updates = bot.getUpdates()
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="안녕, 나는 깃허브 레포 알람 봇이야~!!", reply_markup=reply_markup)
 
-def buildMenu(buttons, n_cols, header_buttons=None, footer_buttons=None):
-    menu = [buttons[i:i+n_cols] for i in range(0, len(buttons), n_cols)]
-    if header_buttons:
-        menu.insert(0, header_buttons)
-    if footer_buttons:
-        menu.append(footer_buttons)
-    return menu
-
 def repoStatus(update, context):
     repoList = []
     res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
@@ -41,9 +33,7 @@ def repoStatus(update, context):
 
     for i in range(0,resLength):
         repoList.append([InlineKeyboardButton(text=f"{res['alias'][i]}", callback_data=f"{res['alias'][i]}")])
-    
 
-    #repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
     repoMarkup = InlineKeyboardMarkup(repoList)
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
@@ -69,8 +59,8 @@ def callbackGet(update, context):
     data2 = { 'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}', 'fav_repository' : f'{repoURL}', 'type' : 'telegram', 'branch' : f'{repoBRANCH}'}
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", params = data2)
     res2 = json.loads(res2.content)
-    print(res2[0])
-    if res2 == []:
+    print(res2['']['commit'])
+    """ if res2 == []:
         res2 = "해당 레포 업데이트 사항이 없습니다."
     elif res2 == None:
         res2 = "해당 레포 업데이트 사항이 없습니다."
@@ -82,7 +72,7 @@ def callbackGet(update, context):
         res2 = res2 + "이름 : " + res2.get("commit").get("committer").get("name") + "\n"
         res2 = res2 + "이메일 : " + res2.get("commit").get("committer").get("email") + "\n"
         res2 = res2 + "커밋메세지 : " + res2.get("commit").get("message") + "\n"
-        res2 = res2 + "주소 : " + res2.get("html_url")
+        res2 = res2 + "주소 : " + res2.get("html_url") """
 
     context.bot.edit_message_text(text=f"{res2}",
                                   chat_id=update.callback_query.message.chat_id,
