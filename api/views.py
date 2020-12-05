@@ -27,9 +27,10 @@ class UserAlarm (APIView) :
         chat_id = request.GET.get('id', '')
         nick_name = request.GET.get('nick_name', '')
         res = request.GET.get('json', '')
+        print(res)
 
         #res = json.loads(info)
-        ISO = res[0].get("commit").get("committer").get("date")
+        """ ISO = res[0].get("commit").get("committer").get("date")
         KST = changeKST(ISO)
 
         return_res=f"[{nick_name}] 커밋이력입니다.\n"
@@ -37,7 +38,7 @@ class UserAlarm (APIView) :
         return_res = return_res + "이름 : " + res[0].get("commit").get("committer").get("name") + "\n"
         return_res = return_res + "이메일 : " + res[0].get("commit").get("committer").get("email") + "\n"
         return_res = return_res + "커밋메세지 : " + res[0].get("commit").get("message") + "\n"
-        return_res = return_res + "주소 : " + res[0].get("html_url")
+        return_res = return_res + "주소 : " + res[0].get("html_url") """
 
         bot.send_message(chat_id=chat_id, text=f"{return_res}")
         return Response(status=200)
