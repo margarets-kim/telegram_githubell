@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import os
 import telegram
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from django.http import HttpResponse
 import requests, json
