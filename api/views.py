@@ -38,7 +38,8 @@ def repoStatus(update, context):
     res=json.loads(res.content)
     print(res['alias'])
 
-    for i in res['alias']:
+
+    for i in len(res['alias']):
         repoList.append(InlineKeyboardButton(f"{res['alias'][i]}", callback_data=f"{res['alias'][i]}"))
 
     repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
