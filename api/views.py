@@ -24,24 +24,28 @@ updates = bot.getUpdates()
 class UserAlarm (APIView) : 
 
     def get (self, request) :
-        chat_id = request.GET.get('id', '')
-        nick_name = request.GET.get('nick_name', '')
-        res = request.GET.get('json', '')
-        print(res)
+        try:
+            chat_id = request.GET.get('id', '')
+            nick_name = request.GET.get('nick_name', '')
+            committer = request.GET.get('name', '')
+            email = request.GET.get('email', '')
+            msg = request.GET.get('msg', '')
+            url = request.GET.get('url', '')
+            ISO = request.GET.get('date', '')
 
-        #res = json.loads(info)
-        """ ISO = res[0].get("commit").get("committer").get("date")
-        KST = changeKST(ISO)
+            KST = changeKST(ISO)
 
-        return_res=f"[{nick_name}] 커밋이력입니다.\n"
-        return_res = return_res + "날짜 : " + KST + "\n"
-        return_res = return_res + "이름 : " + res[0].get("commit").get("committer").get("name") + "\n"
-        return_res = return_res + "이메일 : " + res[0].get("commit").get("committer").get("email") + "\n"
-        return_res = return_res + "커밋메세지 : " + res[0].get("commit").get("message") + "\n"
-        return_res = return_res + "주소 : " + res[0].get("html_url") """
+            return_res=f"[{nick_name}] 커밋이력입니다.\n"
+            return_res = return_res + f"날짜 : {KST}\n"
+            return_res = return_res + f"이름 : {committer}\n"
+            return_res = return_res + f"이메일 : {email}\n"
+            return_res = return_res + f"커밋메세지 : {msg}\n"
+            return_res = return_res + f"주소 : {url}
 
-        bot.send_message(chat_id=chat_id, text=f"{res}")
-        return Response(status=200)
+            bot.send_message(chat_id=chat_id, text=f"{return_res}")
+            return Response(status=200)
+        except Exception as e:
+            return Response("error", status=404)
     
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="안녕, 나는 깃허브 레포 알람 봇이야~!!", reply_markup=reply_markup)
