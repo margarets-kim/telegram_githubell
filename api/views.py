@@ -60,7 +60,7 @@ def callbackGet(update, context):
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", params = data2)
     res2 = json.loads(res2.content)
     print(res2)
-    print(res2.get("commit"))
+    print(res2[0].get("commit"))
     """ if res2 == []:
         res2 = "해당 레포 업데이트 사항이 없습니다."
     elif res2 == None:
