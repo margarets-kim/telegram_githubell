@@ -40,7 +40,7 @@ class UserAlarm (APIView) :
         return_res = return_res + "커밋메세지 : " + res[0].get("commit").get("message") + "\n"
         return_res = return_res + "주소 : " + res[0].get("html_url") """
 
-        bot.send_message(chat_id=chat_id, text=f"{return_res}")
+        bot.send_message(chat_id=chat_id, text=f"{res}")
         return Response(status=200)
     
 def start(update, context):
