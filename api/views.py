@@ -48,13 +48,13 @@ def repoStatus(update, context):
 def callbackGet(update, context):
     data = {'id':f'{update.effective_chat.id}','nick_name':f'{update.callback_query.data}'}
     res = requests.get("http://margarets.pythonanywhere.com/api/git/",params=data)
-    res = json.loads()
+    res = json.loads(res.content)
     print(res)
     repoURL = res['repoUrl']
     repoBRANCH = res['repoBranch']
     data2 = { 'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}', 'fav_repository' : f'{repoURL}', 'type' : 'telegram', 'branch' : f'{repoBRANCH}'}
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", data = data2)
-    res2 = json.loads()
+    res2 = json.loads(res2.content)
     context.bot.edit_message_text(text=f"{res2}")
 
 start_handler = CommandHandler('start', start)
