@@ -23,7 +23,7 @@ updates = bot.getUpdates()
 
 class UserAlarm (APIView) : 
 
-    def get (self, request) {
+    def get (self, request) :
         chat_id = request.GET.get('id', '')
         nick_name = request.GET.get('nick_name', '')
         info = request.GET.get('json', '')
@@ -41,8 +41,7 @@ class UserAlarm (APIView) :
 
         bot.send_message(chat_id=chat_id, text=f"{return_res}")
         return Response(status=200)
-    }
-
+    
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="안녕, 나는 깃허브 레포 알람 봇이야~!!", reply_markup=reply_markup)
 
