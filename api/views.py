@@ -27,7 +27,7 @@ def repoStatus(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text='your repo list')
 
 start_handler = CommandHandler('start', start)
-repoStatus_handler = CommandHandler('repo', repoStatus)
+repoStatus_handler = CommandHandler('레포확인', repoStatus)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(repoStatus_handler)
