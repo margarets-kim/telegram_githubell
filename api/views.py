@@ -77,10 +77,10 @@ def callbackGet(update, context):
         KST = changeKST(ISO)
         res2 = f"[{update.callback_query.data}] 최근 커밋 이력입니다.\n"
         res2 = res2 + "날짜 : " + KST + "\n"
-        res2 = res2 + "이름 : " + res2[0]['commit']['committer']['name'] + "\n"
-        res2 = res2 + "이메일 : " + res2[0]['commit']['committer']['email'] + "\n"
-        res2 = res2 + "커밋메세지 : " + res2[0]['commit']['message'] + "\n"
-        res2 = res2 + "주소 : " + res2[0]['html_url']
+        res2 = res2 + "이름 : " + res2[0].get("commit").get("committer").get("name") + "\n"
+        res2 = res2 + "이메일 : " + res2[0].get("commit").get("committer").get("email") + "\n"
+        res2 = res2 + "커밋메세지 : " + res2[0].get("commit").get("message") + "\n"
+        res2 = res2 + "주소 : " + res2[0].get("html_url")
 
     context.bot.edit_message_text(text=f"{res2}",
                                   chat_id=update.callback_query.message.chat_id,
