@@ -46,7 +46,9 @@ def repoStatus(update, context):
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
 def callbackGet(update, context):
-    update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
+    context.bot.edit_message_text(text="선택되었습니다.",
+                                  chat_id=update.callback_query.message.chat_id,
+                                  message_id=update.callback_query.message.message_id)
     """ data = {'id':f'{update.effective_chat.id}','nick_name':f'{update.callback_query.data}'}
     res = requests.get("http://margarets.pythonanywhere.com/api/git/",params=data)
     res = json.loads(res.content)
