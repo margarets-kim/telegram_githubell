@@ -26,7 +26,7 @@ def start(update, context):
 def repoStatus(update, context):
     res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
     res=json.loads(res)
-    print(res['alias']0)
+    print(res['alias'])
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"{res}")
 
 start_handler = CommandHandler('start', start)
