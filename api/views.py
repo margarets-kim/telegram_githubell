@@ -21,8 +21,7 @@ dispatcher = updater.dispatcher
 updates = bot.getUpdates()
 
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
-    bot.send_message(chat_id=update.effective_chat.id, reply_markup=reply_markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!", reply_markup=reply_markup)
 
 def repoStatus(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text='your repo list')
