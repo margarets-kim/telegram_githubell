@@ -43,7 +43,7 @@ def repoStatus(update, context):
         repoList.append(InlineKeyboardButton(f"{res['alias'][i]}", callback_data=f"{res['alias'][i]}"))
 
     repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
-    print("menu : "+buildMenu(repoList, len(repoList)-1))
+    print(buildMenu(repoList, len(repoList)-1))
     #repoMarkup = InlineKeyboardMarkup(repoList)
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
