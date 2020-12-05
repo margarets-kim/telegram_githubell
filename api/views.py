@@ -59,7 +59,7 @@ def callbackGet(update, context):
     data2 = { 'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}', 'fav_repository' : f'{repoURL}', 'type' : 'telegram', 'branch' : f'{repoBRANCH}'}
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", params = data2)
     res2 = json.loads(res2.content)
-    print(res2['']['commit'])
+    print(res2['commit'])
     """ if res2 == []:
         res2 = "해당 레포 업데이트 사항이 없습니다."
     elif res2 == None:
