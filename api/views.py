@@ -30,7 +30,6 @@ def buildMenu(buttons, n_cols, header_buttons=None, footer_buttons=None):
         menu.insert(0, header_buttons)
     if footer_buttons:
         menu.append(footer_buttons)
-    print("menu : "+menu)
     return menu
 
 def repoStatus(update, context):
@@ -43,8 +42,9 @@ def repoStatus(update, context):
     for i in range(0,resLength):
         repoList.append(InlineKeyboardButton(f"{res['alias'][i]}", callback_data=f"{res['alias'][i]}"))
 
-    #repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
-    repoMarkup = InlineKeyboardMarkup(repoList)
+    repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
+    print("menu : "+buildMenu(repoList, len(repoList)-1))
+    #repoMarkup = InlineKeyboardMarkup(repoList)
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
 def changeKST(ISO):
