@@ -3,7 +3,7 @@ import os
 import telegram
 from telegram.ext import Updater, CommandHandler
 from django.http import HttpResponse
-import requests
+import requests, json
 
 TOKEN="1259085830:AAFNuPKWM4yNnn1xvdNip9ADGZGCMb4sFmk"
 url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
