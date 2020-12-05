@@ -25,7 +25,7 @@ def start(update, context):
 
 def repoStatus(update, context):
     res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
-    res=json.loads(res)
+    res=json.loads(res.content)
     print(res['alias'])
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"{res['alias']}")
 
