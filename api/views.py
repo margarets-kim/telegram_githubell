@@ -25,7 +25,7 @@ def start(update, context):
 
 def repoStatus(update, context):
     res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
-    print(res.content)
+    print(res.json())
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"{res}")
 
 start_handler = CommandHandler('start', start)
@@ -35,25 +35,3 @@ dispatcher.add_handler(start_handler)
 dispatcher.add_handler(repoStatus_handler)
 
 updater.start_polling()
-
-""" p=requests.post(url).json()
-print(p) """
-
-""" PORT = int(os.environ.get('PORT','8443'))
-updater = Updater(TOKEN, use_context=True)
-
-dispatcher = updater.dispatcher
-
-dispatcher.add_hadler((CommandHandler("start",start)))
-
-updater.start_webhook(  
-                        listen="0.0.0.0",
-                        port=PORT,
-                        url_path=TOKEN
-                                        )
-
-updater.bot.set_webhook("https://alarm-bot-repo.herokuapp.com/"+TOKEN)
-updater.idle()
-
-def start(bot, update):
-    update.message.reply_text('Hi! I'm repoBot')  """
