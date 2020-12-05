@@ -40,10 +40,12 @@ class UserAlarm (APIView) :
             return_res = return_res + f"이름 : {committer}\n"
             return_res = return_res + f"이메일 : {email}\n"
             return_res = return_res + f"커밋메세지 : {msg}\n"
-            return_res = return_res + f"주소 : {url}
+            return_res = return_res + f"주소 : {url}"
 
             bot.send_message(chat_id=chat_id, text=f"{return_res}")
+            
             return Response(status=200)
+
         except Exception as e:
             return Response("error", status=404)
     
@@ -54,7 +56,6 @@ def repoStatus(update, context):
     repoList = []
     res = requests.get(f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
     res=json.loads(res.content)
-    print(res['alias'])
     resLength = len(res['alias'])
 
     for i in range(0,resLength):
