@@ -46,7 +46,8 @@ def repoStatus(update, context):
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
 def callbackGet(update, context):
-    data = {'id':f'{update.effective_chat.id}','nick_name':f'{update.callback_query.data}'}
+    update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
+    """ data = {'id':f'{update.effective_chat.id}','nick_name':f'{update.callback_query.data}'}
     res = requests.get("http://margarets.pythonanywhere.com/api/git/",params=data)
     res = json.loads(res.content)
     repoURL = res['repoUrl']
@@ -56,7 +57,7 @@ def callbackGet(update, context):
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", params = data2)
     res2 = json.loads(res2.content)
     print(res2)
-    update.message.reply_text(text=f"{res2}")
+    update.message.reply_text(text=f"{res2}") """
 
 start_handler = CommandHandler('start', start)
 repoStatus_handler = CommandHandler('check', repoStatus)
