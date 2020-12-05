@@ -59,24 +59,22 @@ def callbackGet(update, context):
     data2 = { 'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}', 'fav_repository' : f'{repoURL}', 'type' : 'telegram', 'branch' : f'{repoBRANCH}'}
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", params = data2)
     res2 = json.loads(res2.content)
-    print(res2)
-    print(res2[0])
-    print(res2[0].get("commit"))
-    """ if res2 == []:
-        res2 = "해당 레포 업데이트 사항이 없습니다."
+    
+    if res2 == []:
+        return_res2 = "해당 레포 업데이트 사항이 없습니다."
     elif res2 == None:
-        res2 = "해당 레포 업데이트 사항이 없습니다."
+        return_res2 = "해당 레포 업데이트 사항이 없습니다."
     else:
         ISO = res2[0].get("commit").get("committer").get("date")
         KST = changeKST(ISO)
-        res2 = f"[{update.callback_query.data}] 최근 커밋 이력입니다.\n"
-        res2 = res2 + "날짜 : " + KST + "\n"
-        res2 = res2 + "이름 : " + res2.get("commit").get("committer").get("name") + "\n"
-        res2 = res2 + "이메일 : " + res2.get("commit").get("committer").get("email") + "\n"
-        res2 = res2 + "커밋메세지 : " + res2.get("commit").get("message") + "\n"
-        res2 = res2 + "주소 : " + res2.get("html_url") """
+        return_res2 = f"[{update.callback_query.data}] 최근 커밋 이력입니다.\n"
+        return_res2 = return_res2 + "날짜 : " + KST + "\n"
+        return_res2 = return_res2 + "이름 : " + res2[0].get("commit").get("committer").get("name") + "\n"
+        return_res2 = return_res2 + "이메일 : " + res2[0].get("commit").get("committer").get("email") + "\n"
+        return_res2 = return_res2 + "커밋메세지 : " + res2[0].get("commit").get("message") + "\n"
+        return_res2 = return_res2 + "주소 : " + res2[0].get("html_url")
 
-    context.bot.edit_message_text(text=f"{res2}",
+    context.bot.edit_message_text(text=f"{return_res2}",
                                   chat_id=update.callback_query.message.chat_id,
                                   message_id=update.callback_query.message.message_id)
 
