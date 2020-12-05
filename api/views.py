@@ -53,7 +53,7 @@ def callbackGet(update, context):
     repoBRANCH = res['repoBranch']
     print(repoURL+" "+repoBRANCH)
     data2 = { 'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}', 'fav_repository' : f'{repoURL}', 'type' : 'telegram', 'branch' : f'{repoBRANCH}'}
-    res2 = requests.get("http://margarets.pythonanywhere.com/api/", data = data2)
+    res2 = requests.get("http://margarets.pythonanywhere.com/api/", params = data2)
     res2 = json.loads(res2.content)
     print(res2)
     update.message.reply_text(text=f"{res2}")
