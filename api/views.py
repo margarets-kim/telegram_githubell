@@ -45,17 +45,42 @@ def repoStatus(update, context):
     repoMarkup = InlineKeyboardMarkup(buildMenu(repoList, len(repoList)-1))
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
 
+def changeKST(ISO):
+    yyyymmdd, time = ISO.split('T')
+    yyyy, mm, dd = yyyymmdd.split('-')
+    hour, minute, second = time.split(':')
+    second,Z = second.split('Z')
+    hour=int(hour)+9
+    if hour>=24:
+        hour-=24
+    hour=str(hour)
+    #KST = yyyy + "년" + mm + "월" + dd + "일 " + hour + "시" + minute + "분" + second + "초"
+    KST = yyyymmdd + " " + hour + ":" + minute + ":" + second
+    return KST
+
 def callbackGet(update, context):
     data = {'id':f'{update.effective_chat.id}','nick_name':f'{update.callback_query.data}'}
     res = requests.get("http://margarets.pythonanywhere.com/api/git/",params=data)
     res = json.loads(res.content)
     repoURL = res['repoUrl']
     repoBRANCH = res['repoBranch']
-    print(repoURL+" "+repoBRANCH)
     data2 = { 'id' : f'{update.effective_chat.id}', 'nick_name' : f'{update.callback_query.data}', 'fav_repository' : f'{repoURL}', 'type' : 'telegram', 'branch' : f'{repoBRANCH}'}
     res2 = requests.get("http://margarets.pythonanywhere.com/api/", params = data2)
     res2 = json.loads(res2.content)
-    print(res2)
+    if res2 == []:
+        res2 = "해당 레포 업데이트 사항이 없습니다."
+    elif res2 == None:
+        res2 = "해당 레포 업데이트 사항이 없습니다."
+    else:
+        ISO = res2[0].get("commit").get("committer").get("date")
+        KST = changeKST(ISO)
+        return_str_text = f"[{repoList_arr[return_str_repoAlias-1]}] 최근 커밋 이력입니다.\n"
+        return_str_text = return_str_text + "날짜 : " + KST + "\n"
+        return_str_text = return_str_text + "이름 : " + res2[0].get("commit").get("committer").get("name") + "\n"
+        return_str_text = return_str_text + "이메일 : " + res2[0].get("commit").get("committer").get("email") + "\n"
+        return_str_text = return_str_text + "커밋메세지 : " + res2[0].get("commit").get("message") + "\n"
+        return_str_text = return_str_text + "주소 : " + res2[0].get("html_url")
+
     context.bot.edit_message_text(text=f"{res2}",
                                   chat_id=update.callback_query.message.chat_id,
                                   message_id=update.callback_query.message.message_id)
