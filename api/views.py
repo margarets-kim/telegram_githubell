@@ -7,7 +7,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from django.http import HttpResponse
 import requests, json
 
-TOKEN="1498546920:AAFFE6PJlfZjFvWS51fvwDElA0ay6k96QEI"
+#TOKEN="1498546920:AAFFE6PJlfZjFvWS51fvwDElA0ay6k96QEI"
 #url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 
 bot = telegram.Bot(token=TOKEN)
@@ -46,7 +46,7 @@ class UserAlarm (APIView) :
             return Response("error", status=404)
     
 def start(update, context): #시작할 때 호출되는 함수
-    context.bot.send_message(chat_id=update.effective_chat.id, text="안녕!, 난 깃허브 레포 알람 봇:)", reply_markup=reply_markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="안녕!, 난 깃허브 레포 알람 봇:D", reply_markup=reply_markup)
 
 def repoStatus(update, context): #레포리스트를 가져와서 고르는 함수
     repoList = []
