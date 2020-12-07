@@ -21,7 +21,7 @@ p = re.compile('\$branch_*(.*)')
 a = re.compile('\$Alias_*(.*)')
 c = re.compile('\$Check_*(.*)')
 
-BRANCH, ALIAS, TYPING, SEND = range(4)
+BRANCH, ALIAS, TYPING, SEND, CHECK, STATUS, HOW = range(7)
 
 TOKEN = "1498546920:AAFFE6PJlfZjFvWS51fvwDElA0ay6k96QEI"
 bot = telegram.Bot(token=TOKEN)
@@ -156,7 +156,7 @@ def repoStatus(update, context):  # 레포리스트를 가져와서 고르는 �
 
     repoMarkup = InlineKeyboardMarkup(repoList)
     update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
-    return callbackGet
+    return STATUS
 
 
 def end(update: Update, context: CallbackContext) -> None:
@@ -181,7 +181,7 @@ def changeKST(ISO):  # ISO -> KST 시간 변환
 
 def callbackGet(update, context):  # 레포 선택에 대한 대답
     data = {'id': f'{update.effective_chat.id}',
-            'nick_name': f'{update.callback_query.data}'}
+            'nick_name': f'{c.match(update.callback_query.data).group(1)}'}
     res = requests.get(
         "http://margarets.pythonanywhere.com/api/git/", params=data)
     res = json.loads(res.content)
@@ -213,7 +213,17 @@ def callbackGet(update, context):  # 레포 선택에 대한 대답
     context.bot.edit_message_text(text=f"{return_res2}",
                                   chat_id=update.callback_query.message.chat_id,
                                   message_id=update.callback_query.message.message_id)
+    return ConversationHandler.END
 
+
+def howto(update, context):
+    bot.send_message(chat_id=update.message.chat.id,
+                     text='관심있거나 소식받고싶은 레포지토리가 있니?')
+    bot.send_message(chat_id=update.message.chat.id,
+                     text='https://githubell.netlify.app/ 에서 깃허브 레포지토리를 등록할수있어!')
+    bot.send_message(chat_id=update.message.chat.id,
+                     text='깃허벨 홈페이지에서 만든 큐알코드를 인식 어플로 인식시켜주면 내가 기억해둘게!')
+    return ConversationHandler.END
 # start_handler = CommandHandler('start', start, pass_args=True)
 # repoStatus_handler = CommandHandler('check', repoStatus)
 
@@ -240,7 +250,10 @@ conv_handler = ConversationHandler(
         BRANCH: [CallbackQueryHandler(branch, pattern=p)],
         ALIAS: [CallbackQueryHandler(saveAlias, pattern='^(?!\/skip).*$'), CommandHandler('skip', skip_alias)],
         TYPING: [MessageHandler(Filters.text & ~Filters.command, saveAlias)],
-        SEND: [CallbackQueryHandler(send, pattern='^SEND$')]
+        SEND: [CallbackQueryHandler(send, pattern='^SEND$')],
+        CHECK: [CommandHandler('check', repoStatus)],
+        STATUS: [(CallbackQueryHandler(callbackGet, pattern=c))],
+        HOW: [CommandHandler('howto', howto)],
     },
     fallbacks=[CallbackQueryHandler(end, pattern='^END$')]
 )
