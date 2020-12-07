@@ -247,4 +247,4 @@ conv_handler = ConversationHandler(
 dispatcher.add_handler(conv_handler)
 # dispatcher.add_handler(CallbackQueryHandler(callbackGet, pattern=c))
 
-updater.start_polling(timeout=10, poll_interval=3, clean=True)
+updater.start_polling(timeout=5, poll_interval=1, clean=True)
