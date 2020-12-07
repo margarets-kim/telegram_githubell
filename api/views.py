@@ -3,8 +3,10 @@ from django.shortcuts import render
 import telegram
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, CallbackQueryHandler, MessageHandler, Filters, CallbackContext
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+#from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from django.http import HttpResponse
 import requests
 import json
@@ -245,4 +247,4 @@ conv_handler = ConversationHandler(
 dispatcher.add_handler(conv_handler)
 # dispatcher.add_handler(CallbackQueryHandler(callbackGet, pattern=c))
 
-updater.start_polling(timeout=10)
+updater.start_polling(timeout=10, poll_interval=3, clean=True)
