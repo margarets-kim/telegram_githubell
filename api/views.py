@@ -116,7 +116,6 @@ def branch(update: Update, context: CallbackContext) -> None:
 
 
 def skip_alias(update: Update, context: CallbackContext) -> None:
-    query = update.callback_query
     bot.send_message(chat_id=update.message.chat.id,
                      text=f'알겠어! 기본 레포지토리 이름인 {context.user_data[1]}으로 등록해둘게!')
 
@@ -272,8 +271,8 @@ conv_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
     states={
         BRANCH: [CallbackQueryHandler(branch, pattern=p)],
-        ALIAS: [CallbackQueryHandler(saveAlias, pattern='^(?!\/skip).*$'), CommandHandler('skip', skip_alias)],
-        TYPING: [MessageHandler(Filters.text & ~Filters.command, saveAlias)],
+        ALIAS: [CallbackQueryHandler(saveAlias, pattern='^(?!\/skip).*$')],
+        TYPING: [MessageHandler(Filters.text & ~Filters.command, saveAlias), CommandHandler('skip', skip_alias)],
         SEND: [CallbackQueryHandler(send, pattern='^SEND$')],
         STATUS: [(CallbackQueryHandler(callbackGet, pattern=c))],
         CHOOSE: [MessageHandler(Filters.regex('^(사용방법)$'), howto), MessageHandler(
