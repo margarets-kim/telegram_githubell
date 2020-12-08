@@ -2,6 +2,12 @@
 
 Githubell 파이썬 기반 텔레그램 봇입니다!
 
+깃허벨 Github api 통신 및 Kakao Chat Bot 통신 서버 레포지토리 주소\
+https://github.com/margarets-kim/RepoKaKaoAlarmBot
+
+깃허벨 웹사이트 레포지토리 주소\
+https://github.com/margarets-kim/RKAB_web
+
 ## 실행 스크립트
 
 ### Step 1. 가상환경 생성하기
