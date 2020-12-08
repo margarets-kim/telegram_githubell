@@ -52,7 +52,7 @@ class UserAlarm (APIView):
             return Response(status=200)
 
         except Exception as e:
-            return Response(e, stats=404)
+            return Response(e, status=404)
 
 
 custom_keyboard = [['사용방법'], ['레포지토리 상태 확인']]
@@ -106,7 +106,7 @@ def branch(update: Update, context: CallbackContext) -> None:
     query.answer()
     bot.send_message(chat_id=query.message.chat_id, text=f'{data} 브랜치를 골랐구나?')
     context.user_data[2] = data
-    print(context.user_data)
+    # print(context.user_data)
     text = "이제 별명을 입력해줘!"
     bot.send_message(chat_id=query.message.chat_id, text=text)
     bot.send_message(chat_id=query.message.chat_id,
@@ -150,10 +150,10 @@ def send(update: Update, context: CallbackContext) -> None:
                  'nick_name': context.user_data[3],  # 레포 별명
                  'type': 'telegram',
                  'branch': context.user_data[2]}  # 선택 브랜치
-
-    response = requests.post(url='http://margarets.pythonanywhere.com/api/', data=json.dumps(send_data), headers={
-                             'Content-Type': 'application/json'})
-    print(response)
+    # print(send_data)
+    response = requests.post(
+        url='http://margarets.pythonanywhere.com/api/', data=send_data)
+    # print(response)
     bot.send_message(chat_id=query.message.chat.id,
                      text=f'{context.user_data[3]} 레포지토리가 성공적으로 등록됐어! 이제 새로운 업데이트가 생기면 내가 알려줄게!')
     print(context.user_data)
@@ -161,12 +161,12 @@ def send(update: Update, context: CallbackContext) -> None:
 
 
 def repoStatus(update: Update, context: CallbackContext):  # 레포리스트를 가져와서 고르는 함수
-    print('active repoStatus')
+    #print('active repoStatus')
     repoList = []
     res = requests.get(
         f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
     res = json.loads(res.content)
-    print(update)
+    # print(update)
     resLength = len(res['alias'])
     if(len(res['alias']) == 0):
         update.message.reply_text("아직 등록된 브랜치가 없는것같아...😢")
@@ -176,7 +176,7 @@ def repoStatus(update: Update, context: CallbackContext):  # 레포리스트를 
     else:
         for i in range(0, resLength):
             repoList.append([InlineKeyboardButton(
-                text=f"{res['alias'][i]}", callback_data=f"$Check_"+{res['alias'][i]})])
+                text=f"{res['alias'][i]}", callback_data=f"$Check_{res['alias'][i]}")])
         repoMarkup = InlineKeyboardMarkup(repoList)
         update.message.reply_text("원하는 레포별명을 선택해줄래?", reply_markup=repoMarkup)
         return STATUS
@@ -210,16 +210,16 @@ def callbackGet(update: Update, context: CallbackContext):  # 레포 선택에 �
     res = json.loads(res.content)
     repoURL = res['repoUrl']
     repoBRANCH = res['repoBranch']
-    data2 = {'id': f'{update.effective_chat.id}', 'nick_name': f'{update.callback_query.data}',
+    data2 = {'id': f'{update.effective_chat.id}', 'nick_name': f'{c.match(update.callback_query.data).group(1)}',
              'fav_repository': f'{repoURL}', 'type': 'telegram', 'branch': f'{repoBRANCH}'}
     res2 = requests.get(
         "http://margarets.pythonanywhere.com/api/", params=data2)
     res2 = json.loads(res2.content)
 
     if res2 == []:
-        return_res2 = "해당 레포 업데이트 사항이 없습니다."
+        return_res2 = "해당 레포 업데이트 사항이 없네..:d"
     elif res2 == None:
-        return_res2 = "해당 레포 업데이트 사항이 없습니다."
+        return_res2 = "해당 레포 업데이트 사항이 없어..:("
     else:
         ISO = res2[0].get("commit").get("committer").get("date")
         KST = changeKST(ISO)
@@ -240,7 +240,7 @@ def callbackGet(update: Update, context: CallbackContext):  # 레포 선택에 �
 
 
 def howto(update: Update, context: CallbackContext):
-    print('사용방법')
+    # print('사용방법')
     bot.send_message(chat_id=update.message.chat.id,
                      text='관심있거나 소식받고싶은 레포지토리가 있니?')
     bot.send_message(chat_id=update.message.chat.id,
@@ -263,7 +263,7 @@ dispatcher.add_handler(CallbackQueryHandler(
 
 # url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 # bot = telegram.Bot(token=TOKEN)
-print('start main')
+#print('start main')
 updater = Updater(token=TOKEN, use_context=True)
 
 dispatcher = updater.dispatcher
