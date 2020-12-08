@@ -22,6 +22,6 @@ def urlGet(id):
         repo = responseJson["name"]
         owner = responseJson["owner"]["login"]
         result = bracnhGet(owner, repo)
-        return result
+        return (owner, repo)
     except(IndexError, ValueError):
         return('error')

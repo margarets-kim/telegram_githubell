@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, CallbackQueryHandler, MessageHandler, Filters, CallbackContext
-#from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+# from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from django.http import HttpResponse
 import requests
 import json
@@ -21,14 +21,13 @@ p = re.compile('\$branch_*(.*)')
 a = re.compile('\$Alias_*(.*)')
 c = re.compile('\$Check_*(.*)')
 
-BRANCH, ALIAS, TYPING, SEND, CHECK, STATUS, HOW = range(7)
+BRANCH, ALIAS, TYPING, SEND, STATUS, CHOOSE = range(6)
 
 TOKEN = "1498546920:AAFFE6PJlfZjFvWS51fvwDElA0ay6k96QEI"
 bot = telegram.Bot(token=TOKEN)
 
 
 class UserAlarm (APIView):
-
     def get(self, request):
         try:
             chat_id = request.GET.get('id', '')
@@ -53,11 +52,12 @@ class UserAlarm (APIView):
             return Response(status=200)
 
         except Exception as e:
-            return Response("error", status=404)
+            return Response(e, stats=404)
 
 
-custom_keyboard = [['/howto', '/check', '/start']]
-reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
+custom_keyboard = [['사용방법'], ['레포지토리 상태 확인']]
+reply_markup = telegram.ReplyKeyboardMarkup(
+    custom_keyboard, one_time_keyboard=True)
 
 
 def start(update: Update, context: CallbackContext) -> None:  # 시작할 때 호출되는 함수]
@@ -66,15 +66,22 @@ def start(update: Update, context: CallbackContext) -> None:  # 시작할 때 �
     try:
         user = update.message.from_user
         id = context.args[0]
-        data = getGithub.urlGet(id)
+        owner, repo = getGithub.urlGet(id)
+        data = getGithub.bracnhGet(owner, repo)
         update.message.reply_text(data['name'] + ' 레포지토리를 등록하려고하는구나!')
-        context.user_data[0] = user.id
-        context.user_data[1] = data['name']
+        context.user_data[0] = user.id  # 텔레그램 채팅 아이디
+        context.user_data[1] = data['name']  # 레포지토리 이름
+        # 2번은 선택한 브랜치
+        context.user_data[3] = data['name']  # 레포지토리 별명
+        # 레포지토리 주소
+        context.user_data[4] = f'https://github.com/{owner}/{repo}'
         update.message.reply_text('등록을 위해 몇가지 절차가 필요해!')
         branchList = []
         for i in data['branch_lists']:
             branchList.append([InlineKeyboardButton(
                 text=f"{i}", callback_data=f"$branch_"+i)])
+        branchList.append([InlineKeyboardButton(
+            text="그만두기", callback_data="END")])
         brMarkup = InlineKeyboardMarkup(branchList)
 
         update.message.reply_text(
@@ -85,6 +92,10 @@ def start(update: Update, context: CallbackContext) -> None:  # 시작할 때 �
     except(IndexError, ValueError):
         update.message.reply_text(
             'https://githubell.netlify.app/ 에서 깃허브 레포지토리를 등록할수있어!')
+        update.message.reply_text(
+            '/start 명령어로 언제든지 날 불러줘!')
+        return CHOOSE
+
 
 # 브랜치 선택에 대한 대답 (BRANCH)
 
@@ -105,12 +116,10 @@ def branch(update: Update, context: CallbackContext) -> None:
 
 
 def skip_alias(update: Update, context: CallbackContext) -> None:
-    user = update.message.from_user
-    logger.info("%s은 별명입력을 하지 않음", user.first_name)
-    bot.send_message(chat_id=query.message.chat_id,
+    query = update.callback_query
+    bot.send_message(chat_id=update.message.chat.id,
                      text=f'알겠어! 기본 레포지토리 이름인 {context.user_data[1]}으로 등록해둘게!')
-    context.user_data[3] = data['name']
-    callback_data = str(SEND)
+
     return SEND
 
 
@@ -134,33 +143,47 @@ def saveAlias(update: Update, context: CallbackContext):
 
 
 def send(update: Update, context: CallbackContext) -> None:
-
     query = update.callback_query
     query.answer()
+    send_data = {'id': context.user_data[0],  # 유저 아이디
+                 'fav_repository': context.user_data[4],  # 레포주소
+                 'nick_name': context.user_data[3],  # 레포 별명
+                 'type': 'telegram',
+                 'branch': context.user_data[2]}  # 선택 브랜치
+
+    response = requests.post(url='http://margarets.pythonanywhere.com/api/', data=json.dumps(send_data), headers={
+                             'Content-Type': 'application/json'})
+    print(response)
     bot.send_message(chat_id=query.message.chat.id,
                      text=f'{context.user_data[3]} 레포지토리가 성공적으로 등록됐어! 이제 새로운 업데이트가 생기면 내가 알려줄게!')
     print(context.user_data)
     return ConversationHandler.END
 
 
-def repoStatus(update, context):  # 레포리스트를 가져와서 고르는 함수
+def repoStatus(update: Update, context: CallbackContext):  # 레포리스트를 가져와서 고르는 함수
+    print('active repoStatus')
     repoList = []
     res = requests.get(
         f"http://margarets.pythonanywhere.com/api/alias/?id={update.effective_chat.id}")
     res = json.loads(res.content)
+    print(update)
     resLength = len(res['alias'])
-
-    for i in range(0, resLength):
-        repoList.append([InlineKeyboardButton(
-            text=f"{res['alias'][i]}", callback_data=f"$Check_"+{res['alias'][i]})])
-
-    repoMarkup = InlineKeyboardMarkup(repoList)
-    update.message.reply_text("원하는 레포별명을 선택해주세요", reply_markup=repoMarkup)
-    return STATUS
+    if(len(res['alias']) == 0):
+        update.message.reply_text("아직 등록된 브랜치가 없는것같아...😢")
+        update.message.reply_text(
+            "🔔 https://githubell.netlify.app/ 에서 깃허브 레포지토리를 등록할수있어!")
+        return ConversationHandler.END
+    else:
+        for i in range(0, resLength):
+            repoList.append([InlineKeyboardButton(
+                text=f"{res['alias'][i]}", callback_data=f"$Check_"+{res['alias'][i]})])
+        repoMarkup = InlineKeyboardMarkup(repoList)
+        update.message.reply_text("원하는 레포별명을 선택해줄래?", reply_markup=repoMarkup)
+        return STATUS
 
 
 def end(update: Update, context: CallbackContext) -> None:
-    bot.send_message(chat_id=update.message.chat.id,
+    bot.send_message(chat_id=update.callback_query.message.chat.id,
                      text='레포지토리 등록이 중단되었어:(')
     return ConversationHandler.END
 
@@ -179,7 +202,7 @@ def changeKST(ISO):  # ISO -> KST 시간 변환
     return KST
 
 
-def callbackGet(update, context):  # 레포 선택에 대한 대답
+def callbackGet(update: Update, context: CallbackContext):  # 레포 선택에 대한 대답
     data = {'id': f'{update.effective_chat.id}',
             'nick_name': f'{c.match(update.callback_query.data).group(1)}'}
     res = requests.get(
@@ -216,7 +239,8 @@ def callbackGet(update, context):  # 레포 선택에 대한 대답
     return ConversationHandler.END
 
 
-def howto(update, context):
+def howto(update: Update, context: CallbackContext):
+    print('사용방법')
     bot.send_message(chat_id=update.message.chat.id,
                      text='관심있거나 소식받고싶은 레포지토리가 있니?')
     bot.send_message(chat_id=update.message.chat.id,
@@ -251,11 +275,14 @@ conv_handler = ConversationHandler(
         ALIAS: [CallbackQueryHandler(saveAlias, pattern='^(?!\/skip).*$'), CommandHandler('skip', skip_alias)],
         TYPING: [MessageHandler(Filters.text & ~Filters.command, saveAlias)],
         SEND: [CallbackQueryHandler(send, pattern='^SEND$')],
-        CHECK: [CommandHandler('check', repoStatus)],
         STATUS: [(CallbackQueryHandler(callbackGet, pattern=c))],
-        HOW: [CommandHandler('howto', howto)],
+        CHOOSE: [MessageHandler(Filters.regex('^(사용방법)$'), howto), MessageHandler(
+            Filters.regex('^레포지토리 상태 확인$'), repoStatus)]
     },
-    fallbacks=[CallbackQueryHandler(end, pattern='^END$')]
+    fallbacks=[CallbackQueryHandler(end, pattern='^END$')],
+
+    per_user=True,
+    conversation_timeout=3600,
 )
 dispatcher.add_handler(conv_handler)
 # dispatcher.add_handler(CallbackQueryHandler(callbackGet, pattern=c))
