@@ -198,8 +198,7 @@ def end(update: Update, context: CallbackContext) -> None:
 
 
 def farewell(update: Update, context: CallbackContext) -> None:
-    bot.send_message(chat_id=update.message.chat.id,
-                     text='너도 안녕!! 다시 내가 필요하면 /start로 날 불러줘!')
+
     return ConversationHandler.END
 
 
